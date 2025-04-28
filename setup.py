@@ -23,8 +23,8 @@ module = Extension(
 )
 
 setup(
-    name="NCMUnlocker",
+    name="AMNCMHack",
     version="0.1",
-    description="NCMUnlocker, a python wrapper for Netease Cloud Music Unlocker",
+    description="AMNCMHack, a python wrapper for Netease Cloud Music Unlocker",
     ext_modules=[module],
 )
