@@ -1,8 +1,8 @@
-import NCMUnlocker
+import os
+import AMNCMHack as NCMUnlocker
 from functools import partial
 import argparse
 import sys
-import os
 import re
 from tqdm import tqdm
 
@@ -22,7 +22,12 @@ def trace_cb(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NCM Unlocker CLI")
-    parser.add_argument("srcs", type=str, nargs="+", help="Source file or directory")
+    parser.add_argument(
+        "srcs",
+        type=str,
+        nargs="+",
+        help="Source file or directory path or filename in regex mode",
+    )
     parser.add_argument(
         "-t", "--thread", type=int, required=False, help="Thread number"
     )
@@ -31,24 +36,24 @@ if __name__ == "__main__":
     )
     parser.add_argument("-o", type=str, required=False, help="Output directory")
     parser.add_argument(
-        "-r", action="store_true", required=False, help="Use regex to match filename"
+        "-r",
+        action="store_true",
+        required=False,
+        help="Use regex to match filename in current directory",
     )
     args = parser.parse_args()
     tar_paths = []
     if args.r:
         for src in args.srcs:
-            dir_path = os.path.dirname(src)
-            name_pattern = os.path.basename(src)
+            name_pattern = src
             try:
                 pattern_f = re.compile(name_pattern)
             except re.error:
                 print(f"❌ NCMUnlocker: Invalid regex pattern: {name_pattern}")
-                sys.exit(1)
-            if not os.path.exists(dir_path):
                 continue
-            for file in os.listdir(dir_path):
+            for file in os.listdir(os.getcwd()):
                 if re.match(pattern_f, file):
-                    tar_paths.append(os.path.join(dir_path, file))
+                    tar_paths.append(os.path.join(os.getcwd(), file))
     else:
         for src in args.srcs:
             if os.path.isfile(src) and src.endswith(".ncm"):
@@ -103,4 +108,6 @@ if __name__ == "__main__":
             if ec != NCMUnlocker.NCMErrorCode.Success:
                 print(f"❌ NCMUnlocker: {src} decryption failed, error code: {ec}")
 
-    print(f"NCMUnlocker: Total: {len(results)} , ✅: {success_num} , ❌: {failed_num}")
+    print(
+        f"NCMUnlocker Result: Total: {len(results)} , ✅: {success_num} , ❌: {failed_num}"
+    )

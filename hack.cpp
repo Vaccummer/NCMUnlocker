@@ -1,20 +1,12 @@
 #define _WIN32_WINNT 0x0A00
 #define _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR
-#include <algorithm>
-#include <atomic>
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include <codecvt>
-#include <condition_variable>
-#include <cstdint>
 #include <filesystem>
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <fstream>
-#include <functional>
-#include <future>
 #include <iostream>
-#include <locale>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <openssl/aes.h>
@@ -23,7 +15,6 @@
 #include <pybind11/functional.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <queue>
 #include <string>
 #include <taglib/attachedpictureframe.h>
 #include <taglib/flacfile.h>
@@ -88,12 +79,15 @@ public:
                 if (item.is_array())
                 {
                     auto name = item[0];
-                    // 如果name是字符串，则直接添加
                     if (name.is_string())
                     {
                         this->artist_name += name.get<std::string>() + ",";
                     }
                 }
+            }
+            if (!this->artist_name.empty())
+            {
+                this->artist_name = this->artist_name.substr(0, this->artist_name.length() - 1);
             }
         }
         if (this->artist_name.empty())
@@ -726,7 +720,7 @@ public:
     }
 };
 
-PYBIND11_MODULE(NCMUnlocker, m)
+PYBIND11_MODULE(AMNCMHack, m)
 {
     py::enum_<EC>(m, "NCMErrorCode")
         .value("Success", EC::Success)
